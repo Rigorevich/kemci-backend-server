@@ -1,31 +1,19 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Header,
-  Param,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { Controller, Body, Post, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
+import { LocalAuthGuard } from './auth/local-auth.guard';
+import { AuthService } from './auth/auth.service';
+import { User } from '@prisma/client';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly authService: AuthService,
+  ) {}
 
-  @Get()
-  async findAll() {
-    throw new HttpException('Error', HttpStatus.FORBIDDEN);
-  }
-
-  @Get(':id')
-  getId(@Param('id') id: string): string {
-    return `This is ${id}`;
-  }
-
-  @Post()
-  @Header('Cache-Control', 'none')
-  create(): string {
-    return this.appService.create();
+  // @UseGuards(LocalAuthGuard)
+  @Post('auth/login')
+  async login(@Body() user: User) {
+    return this.authService.login(user);
   }
 }
