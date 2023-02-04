@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id                 Int                @id @default(autoincrement()) @map("category_id")
+  name               String             @db.VarChar(256)
+  subcategories   Subcategory[]
+
+  @@map("categories")
+}
+
+model Subcategory {
+  id                 Int                @id @default(autoincrement()) @map("subcategory_id")
+  name               String             @db.VarChar(256)
+  models             Model[]
+  category_id        Int                @unique
+  categories         Category    @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("subcategories")
+}
+
+model Model {
+  id                 Int                @id @default(autoincrement()) @map("post_id")
+  created_at         DateTime?          @default(now()) @db.Timestamp(6)
+  name               String             @db.VarChar(256)
+  description        String?
+  author_id          Int?
+  subcategory_id     Int
+  users              User?              @relation(fields: [author_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subcategories      Subcategory        @relation(fields: [subcategory_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("models")
+}
+
+model Profile {
+  id      Int     @id @default(autoincrement()) @map("profile_id")
+  name String   @db.VarChar(256)
+  surname String    @db.VarChar(256)
+  patronymic String?    @db.VarChar(256)
+  user_id Int     @unique
+  users   User    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("profiles")
+}
+
+model User {
+  id       Int      @id @default(autoincrement()) @map("user_id")
+  login    String   @unique @db.VarChar(256)
+  hash_password String @db.VarChar(256)
+  role  Role    @default(USER)
+  success   Boolean
+  models    Model[]
+  profiles Profile?
+
+  @@map("users")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
