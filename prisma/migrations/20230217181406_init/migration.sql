@@ -1,6 +1,9 @@
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('USER', 'ADMIN');
 
+-- CreateEnum
+CREATE TYPE "Success" AS ENUM ('SUCCESS', 'BAN');
+
 -- CreateTable
 CREATE TABLE "categories" (
     "category_id" SERIAL NOT NULL,
@@ -20,14 +23,15 @@ CREATE TABLE "subcategories" (
 
 -- CreateTable
 CREATE TABLE "models" (
-    "post_id" SERIAL NOT NULL,
+    "model_id" SERIAL NOT NULL,
     "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
     "name" VARCHAR(256) NOT NULL,
     "description" TEXT,
+    "img" TEXT,
     "author_id" INTEGER,
     "subcategory_id" INTEGER NOT NULL,
 
-    CONSTRAINT "models_pkey" PRIMARY KEY ("post_id")
+    CONSTRAINT "models_pkey" PRIMARY KEY ("model_id")
 );
 
 -- CreateTable
@@ -44,10 +48,10 @@ CREATE TABLE "profiles" (
 -- CreateTable
 CREATE TABLE "users" (
     "user_id" SERIAL NOT NULL,
-    "login" VARCHAR(256) NOT NULL,
+    "email" VARCHAR(256) NOT NULL,
     "hash_password" VARCHAR(256) NOT NULL,
     "role" "Role" NOT NULL DEFAULT 'USER',
-    "success" BOOLEAN NOT NULL,
+    "success" "Success" NOT NULL DEFAULT 'SUCCESS',
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("user_id")
 );
@@ -59,7 +63,7 @@ CREATE UNIQUE INDEX "subcategories_category_id_key" ON "subcategories"("category
 CREATE UNIQUE INDEX "profiles_user_id_key" ON "profiles"("user_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_login_key" ON "users"("login");
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- AddForeignKey
 ALTER TABLE "subcategories" ADD CONSTRAINT "subcategories_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "categories"("category_id") ON DELETE NO ACTION ON UPDATE NO ACTION;

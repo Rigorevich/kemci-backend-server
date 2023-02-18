@@ -29,10 +29,11 @@ model Subcategory {
 }
 
 model Model {
-  id                 Int                @id @default(autoincrement()) @map("post_id")
+  id                 Int                @id @default(autoincrement()) @map("model_id")
   created_at         DateTime?          @default(now()) @db.Timestamp(6)
   name               String             @db.VarChar(256)
   description        String?
+  img                String?
   author_id          Int?
   subcategory_id     Int
   users              User?              @relation(fields: [author_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -54,10 +55,10 @@ model Profile {
 
 model User {
   id       Int      @id @default(autoincrement()) @map("user_id")
-  login    String   @unique @db.VarChar(256)
+  email    String   @unique @db.VarChar(256)
   hash_password String @db.VarChar(256)
   role  Role    @default(USER)
-  success   Boolean
+  success   Success   @default(SUCCESS)
   models    Model[]
   profiles Profile?
 
@@ -67,4 +68,9 @@ model User {
 enum Role {
   USER
   ADMIN
+}
+
+enum Success {
+  SUCCESS
+  BAN
 }
