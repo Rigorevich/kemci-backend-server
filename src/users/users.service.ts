@@ -6,10 +6,27 @@ import { User, Prisma } from '@prisma/client';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async findOne(email: string): Promise<User | undefined> {
-    return this.prisma.user.findUnique({
+  async findOne(id: number): Promise<User | undefined> {
+    return await this.prisma.user.findUnique({
       where: {
-        email,
+        id,
+      },
+    });
+  }
+
+  async updateSuccess(id: number): Promise<User> {
+    const { success } = await this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    return await this.prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        success: success === 'BAN' ? 'SUCCESS' : 'BAN',
       },
     });
   }

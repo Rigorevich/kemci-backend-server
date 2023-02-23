@@ -63,7 +63,7 @@ export class AuthService {
   }
 
   async login(user: AuthDto, req: Request, res: Response): Promise<Response> {
-    const { email, password, success } = user;
+    const { email, password } = user;
 
     const foundUser = await this.prisma.user.findUnique({
       where: {
@@ -84,7 +84,7 @@ export class AuthService {
       throw new BadRequestException('Wrong credentials');
     }
 
-    if (success === 'BAN') {
+    if (foundUser.success === 'BAN') {
       throw new BadRequestException('Your account has a blocking');
     }
 
